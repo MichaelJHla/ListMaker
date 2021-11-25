@@ -8,3 +8,15 @@
     display: flex;
     flex-direction: column;
 }
+
+#sign-in-page {
+    display: none;
+}
+
+#all-list-page {
+    display: none;
+}
+
+#single-list-page {
+    display: none;
+}

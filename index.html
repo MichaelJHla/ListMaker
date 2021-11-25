@@ -16,9 +16,11 @@
         </form>
     </div>
     <div id="all-list-page">
+        <button class="sign-out-button">Sign Out</button>
         <ol id="all-lists"></ol>
     </div>
     <div id="single-list-page">
+        <button class="sign-out-button">Sign Out</button>
         <h1>List maker</h1>
         <form id="new-item-form">
             <h2>New item: </h2>
@@ -40,9 +42,7 @@
             e.preventDefault();
 
             auth.signInWithEmailAndPassword($('#email').val(), "ListPassword")
-                .then((userCredentials) => {
-                    //Add functionality for sign-in
-                }).catch((error) => {
+                .catch((error) => {
                     if (error.code.includes("user-not-found")) {
                         auth.createUserWithEmailAndPassword($('#email').val(), "ListPassword")
                             .then((userCredentials) => {
@@ -120,18 +120,31 @@
         $('#save').click(function() {
             let list = [];
             $("li").each(function() { list.push($(this).text()) });
-            database.ref("jonah").set(list);
+            database.ref(auth.currentUser.uid + "/Best Games").set(list);
         });
 
-        $(document).ready(function() {
-            auth.signOut();            
+        $('.sign-out-button').click(function() {
+            auth.signOut();
+        });
 
-            database.ref("jonah").get().then(function(s) {
-                var data = s.val();
-                for (var i = 0; i < data.length; i++) {
-                    AddRow(data[i]);
-                }
-            });
+        auth.onAuthStateChanged((user) => {
+            $('#single-list').empty();
+            if (user) {
+                $('#sign-in-page').hide();
+                $('#all-list-page').hide();
+                $('#single-list-page').show();
+
+                database.ref(user.uid + "/Best Games").get().then(function(s) {
+                    var data = s.val();
+                    for (var i = 0; i < data.length; i++) {
+                        AddRow(data[i]);
+                    }
+                });
+            } else {
+                $('#sign-in-page').show();
+                $('#all-list-page').hide();
+                $('#single-list-page').hide();
+            }
         });
     </script>
 </body>

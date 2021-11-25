@@ -12,7 +12,7 @@
     <div id="sign-in-page">
         <form id="sign-in">
             <input type="text" id="email">
-            <input type="submit" value="sign-in">
+            <input type="submit" value="View Lists">
         </form>
     </div>
     <div id="all-list-page">
@@ -34,6 +34,26 @@
         $('#new-item-form').submit(function(e) {
             e.preventDefault();
             AddRow($('#new-item').val());
+        });
+
+        $('#sign-in').submit(function(e) {
+            e.preventDefault();
+
+            auth.signInWithEmailAndPassword($('#email').val(), "ListPassword")
+                .then((userCredentials) => {
+                    //Add functionality for sign-in
+                }).catch((error) => {
+                    if (error.code.includes("user-not-found")) {
+                        auth.createUserWithEmailAndPassword($('#email').val(), "ListPassword")
+                            .then((userCredentials) => {
+                                //Add functionality for new user
+                            }).catch((error) => {
+                                window.alert(error.message);
+                            });
+                    } else {
+                        window.alert(error.message);
+                    }
+                });
         });
 
         function AddRow(s) {
@@ -104,6 +124,8 @@
         });
 
         $(document).ready(function() {
+            auth.signOut();            
+
             database.ref("jonah").get().then(function(s) {
                 var data = s.val();
                 for (var i = 0; i < data.length; i++) {

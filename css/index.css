@@ -1,0 +1,11 @@
+.row {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    justify-content: space-between;
+}
+
+.up-down-buttons {
+    display: flex;
+    flex-direction: column;
+}

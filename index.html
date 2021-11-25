@@ -10,25 +10,28 @@
 
 <body>
     <div id="sign-in-page">
-
+        <form id="sign-in">
+            <input type="text" id="email">
+            <input type="submit" value="sign-in">
+        </form>
     </div>
     <div id="all-list-page">
-        
+        <ol id="all-lists"></ol>
     </div>
     <div id="single-list-page">
         <h1>List maker</h1>
-        <form>
+        <form id="new-item-form">
             <h2>New item: </h2>
             <input type="text" id="new-item">
             <input type="submit" value="Add">
         </form>
         <button id="save">Save List</button>
-        <ol></ol>
+        <ol id="single-list"></ol>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
-        $('form').submit(function(e) {
+        $('#new-item-form').submit(function(e) {
             e.preventDefault();
             AddRow($('#new-item').val());
         });
@@ -61,7 +64,7 @@
             row.append(buttonDiv, text, deleteButton);
             li.append(row);
 
-            $('ol').append(li);
+            $('#single-list').append(li);
         }
     </script>
 

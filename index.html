@@ -17,6 +17,10 @@
     </div>
     <div id="all-list-page">
         <button class="sign-out-button">Sign Out</button>
+        <form id="new-list">
+            <input type="text" id="new-list-name">
+            <input type="submit" value="New List">
+        </form>
         <ul id="all-lists"></ul>
     </div>
     <div id="single-list-page">
@@ -58,7 +62,7 @@
         });
 
         function AddRow(s) {
-            let li = $('<li></li>');
+            let li = $('<li class="list-item"></li>');
 
             let row = $('<div class="row"></div>');
 
@@ -119,10 +123,14 @@
     </script>
     <script>
         $('#save').click(function() {
-            let list = [];
-            $("li").each(function() { list.push($(this).text()) });
-            database.ref(auth.currentUser.uid + "/Best Games").set(list);
+            saveList($('#list-name').html());
         });
+
+        function saveList(listName) {
+            let list = [];
+            $(".list-item").each(function() { list.push($(this).text()) });
+            database.ref(auth.currentUser.uid + "/" + listName).set(list);
+        }
 
         $('.sign-out-button').click(function() {
             auth.signOut();
@@ -187,6 +195,12 @@
                 }
             });
         }
+
+        $('#new-list').submit(function(e) {
+            e.preventDefault();
+
+            openSingleListPage($('#new-list-name').val());
+        });
     </script>
 </body>
 </html>

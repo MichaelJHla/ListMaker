@@ -17,13 +17,14 @@
     </div>
     <div id="all-list-page">
         <button class="sign-out-button">Sign Out</button>
-        <ol id="all-lists"></ol>
+        <ul id="all-lists"></ul>
     </div>
     <div id="single-list-page">
         <button class="sign-out-button">Sign Out</button>
         <h1>List maker</h1>
+        <h2 id="list-name"></h2>
         <form id="new-item-form">
-            <h2>New item: </h2>
+            <h3>New item: </h2>
             <input type="text" id="new-item">
             <input type="submit" value="Add">
         </form>
@@ -130,22 +131,62 @@
         auth.onAuthStateChanged((user) => {
             $('#single-list').empty();
             if (user) {
-                $('#sign-in-page').hide();
-                $('#all-list-page').hide();
-                $('#single-list-page').show();
-
-                database.ref(user.uid + "/Best Games").get().then(function(s) {
-                    var data = s.val();
-                    for (var i = 0; i < data.length; i++) {
-                        AddRow(data[i]);
-                    }
-                });
+                openAllListPage();
             } else {
-                $('#sign-in-page').show();
-                $('#all-list-page').hide();
-                $('#single-list-page').hide();
+                openSignInPage();
             }
         });
+
+        function openSignInPage() {
+            $('#sign-in-page').show();
+            $('#all-list-page').hide();
+            $('#single-list-page').hide();
+        }
+
+        function openAllListPage() {
+            $('#sign-in-page').hide();
+            $('#all-list-page').show();
+            $('#single-list-page').hide();
+
+            $('#all-lists').empty();
+
+            database.ref(auth.currentUser.uid).get().then(function(s) {
+                var lists = Object.keys(s.val());
+                for (var i = 0; i < lists.length; i++) {
+                    createListItem(lists[i]);
+                }
+            });
+        }
+
+        function createListItem(listName) {
+            var li = $('<li></li>');
+
+            li.append('<p>' + listName + '</p>');
+
+            var button = $('<button>View List</button>');
+            button.attr("value", listName);
+            button.click(function() {
+                openSingleListPage(listName);
+            });
+            li.append(button);
+
+            $('#all-lists').append(li);
+        }
+
+        function openSingleListPage(listName) {
+            $('#sign-in-page').hide();
+            $('#all-list-page').hide();
+            $('#single-list-page').show();
+
+            $('#list-name').html(listName);
+
+            database.ref(auth.currentUser.uid + "/" + listName).get().then(function(s) {
+                var data = s.val();
+                for (var i = 0; i < data.length; i++) {
+                    AddRow(data[i]);
+                }
+            });
+        }
     </script>
 </body>
 </html>

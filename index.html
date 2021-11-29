@@ -25,7 +25,9 @@
     </div>
     <div id="single-list-page">
         <button class="sign-out-button">Sign Out</button>
+        <button id="back-to-lists">Back to Lists</button>
         <h1>List maker</h1>
+        <h2>Saving in <span id="save-count">5</span></h2>
         <h2 id="list-name"></h2>
         <form id="new-item-form">
             <h3>New item: </h2>
@@ -136,6 +138,10 @@
             auth.signOut();
         });
 
+        $('#back-to-lists').click(function() {
+            openAllListPage();
+        });
+
         auth.onAuthStateChanged((user) => {
             $('#single-list').empty();
             if (user) {
@@ -149,6 +155,8 @@
             $('#sign-in-page').show();
             $('#all-list-page').hide();
             $('#single-list-page').hide();
+
+            stopTimer();
         }
 
         function openAllListPage() {
@@ -157,6 +165,8 @@
             $('#single-list-page').hide();
 
             $('#all-lists').empty();
+
+            stopTimer();
 
             database.ref(auth.currentUser.uid).get().then(function(s) {
                 var lists = Object.keys(s.val());
@@ -186,6 +196,8 @@
             $('#all-list-page').hide();
             $('#single-list-page').show();
 
+            $('#single-list').empty();
+
             $('#list-name').html(listName);
 
             database.ref(auth.currentUser.uid + "/" + listName).get().then(function(s) {
@@ -193,6 +205,8 @@
                 for (var i = 0; i < data.length; i++) {
                     AddRow(data[i]);
                 }
+
+                startTimer();
             });
         }
 
@@ -201,6 +215,25 @@
 
             openSingleListPage($('#new-list-name').val());
         });
+
+        var timer;
+        var countdown = 5;
+
+        function startTimer() {
+            timer = setInterval(function() {
+                if (countdown <= 0) {
+                    saveList($('#list-name').html());
+                    countdown = 5;
+                } else {
+                    countdown--;
+                }
+                $('#save-count').html(countdown);
+            }, 1000)
+        }
+
+        function stopTimer() {
+            clearInterval(timer)
+        }
     </script>
 </body>
 </html>

@@ -11,14 +11,14 @@
 <body>
     <div id="sign-in-page">
         <form id="sign-in">
-            <input type="text" id="email">
+            <input type="email" id="email" placeholder="Email">
             <input type="submit" value="View Lists">
         </form>
     </div>
     <div id="all-list-page">
         <button class="sign-out-button">Sign Out</button>
         <form id="new-list">
-            <input type="text" id="new-list-name">
+            <input type="text" id="new-list-name" required>
             <input type="submit" value="New List">
         </form>
         <ul id="all-lists"></ul>
@@ -27,7 +27,7 @@
         <button class="sign-out-button">Sign Out</button>
         <button id="back-to-lists">Back to Lists</button>
         <h1>List maker</h1>
-        <h2>Saving in <span id="save-count">5</span></h2>
+        <h2 id="saving-text">Saving in <span id="save-count"></span></h2>
         <h2 id="list-name"></h2>
         <form id="new-item-form">
             <h3>New item: </h2>
@@ -52,9 +52,7 @@
                 .catch((error) => {
                     if (error.code.includes("user-not-found")) {
                         auth.createUserWithEmailAndPassword($('#email').val(), "ListPassword")
-                            .then((userCredentials) => {
-                                //Add functionality for new user
-                            }).catch((error) => {
+                            .catch((error) => {
                                 window.alert(error.message);
                             });
                     } else {
@@ -126,6 +124,12 @@
     <script>
         $('#save').click(function() {
             saveList($('#list-name').html());
+
+            if (timer == null) {
+                $("#saving-text").show();
+                window.alert("List created and saved");
+                startTimer();
+            }
         });
 
         function saveList(listName) {
@@ -166,12 +170,16 @@
 
             $('#all-lists').empty();
 
+            $('#save-count').empty();
+
             stopTimer();
 
             database.ref(auth.currentUser.uid).get().then(function(s) {
-                var lists = Object.keys(s.val());
-                for (var i = 0; i < lists.length; i++) {
-                    createListItem(lists[i]);
+                if (s.val() != null) {
+                    var lists = Object.keys(s.val());
+                    for (var i = 0; i < lists.length; i++) {
+                        createListItem(lists[i]);
+                    }
                 }
             });
         }
@@ -181,17 +189,28 @@
 
             li.append('<p>' + listName + '</p>');
 
-            var button = $('<button>View List</button>');
-            button.attr("value", listName);
-            button.click(function() {
-                openSingleListPage(listName);
+            var viewButton = $('<button>View List</button>');
+            viewButton.attr("value", listName);
+            viewButton.click(function() {
+                openSingleListPage(listName, false);
             });
-            li.append(button);
+            li.append(viewButton);
+
+            var deleteButton = $('<button>Delete List</button>');
+            deleteButton.attr("value", listName);
+            deleteButton.click(function() {
+                if (window.confirm("Delete list: " + listName + "?")) {
+                    database.ref(auth.currentUser.uid + "/" + listName).remove().then(function() {
+                        openAllListPage();
+                    });
+                }
+            });
+            li.append(deleteButton);
 
             $('#all-lists').append(li);
         }
 
-        function openSingleListPage(listName) {
+        function openSingleListPage(listName, newList) {
             $('#sign-in-page').hide();
             $('#all-list-page').hide();
             $('#single-list-page').show();
@@ -200,20 +219,28 @@
 
             $('#list-name').html(listName);
 
-            database.ref(auth.currentUser.uid + "/" + listName).get().then(function(s) {
-                var data = s.val();
-                for (var i = 0; i < data.length; i++) {
-                    AddRow(data[i]);
-                }
+            if (!newList) {
+                database.ref(auth.currentUser.uid + "/" + listName).get().then(function(s) {
+                    var data = s.val();
+                    for (var i = 0; i < data.length; i++) {
+                        AddRow(data[i]);
+                    }
 
-                startTimer();
-            });
+                    countdown = 5;
+
+                    startTimer();
+
+                    $("#saving-text").show();
+                });
+            } else {
+                $('#saving-text').hide();
+            }
         }
 
         $('#new-list').submit(function(e) {
             e.preventDefault();
 
-            openSingleListPage($('#new-list-name').val());
+            openSingleListPage($('#new-list-name').val(), true);
         });
 
         var timer;
@@ -221,7 +248,7 @@
 
         function startTimer() {
             timer = setInterval(function() {
-                if (countdown <= 0) {
+                if (countdown <= 1) {
                     saveList($('#list-name').html());
                     countdown = 5;
                 } else {
@@ -232,7 +259,8 @@
         }
 
         function stopTimer() {
-            clearInterval(timer)
+            clearInterval(timer);
+            timer = null;
         }
     </script>
 </body>

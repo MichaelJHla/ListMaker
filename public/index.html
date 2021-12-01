@@ -35,6 +35,7 @@
             <input type="submit" value="Add">
         </form>
         <button id="save">Save List</button>
+        <a href="" id="a">click here to download your list</a>
         <ol id="single-list"></ol>
     </div>
 
@@ -136,6 +137,8 @@
             let list = [];
             $(".list-item").each(function() { list.push($(this).text()) });
             database.ref(auth.currentUser.uid + "/" + listName).set(list);
+
+            createFile(list, $('#list-name').html() + '.txt', 'text/plain');
         }
 
         $('.sign-out-button').click(function() {
@@ -231,6 +234,8 @@
                     startTimer();
 
                     $("#saving-text").show();
+
+                    saveList(listName);
                 });
             } else {
                 $('#saving-text').hide();
@@ -255,12 +260,25 @@
                     countdown--;
                 }
                 $('#save-count').html(countdown);
-            }, 1000)
+            }, 1000);
         }
 
         function stopTimer() {
             clearInterval(timer);
             timer = null;
+        }
+
+        function createFile(list, name, type) {
+            var fileString = "";
+
+            for (var i = 1; i <= list.length; i++) {
+                fileString += i + ". " + list[i - 1] + "\n";
+            }
+
+            var a = document.getElementById("a");
+            var file = new Blob([fileString], {type: type});
+            a.href = URL.createObjectURL(file);
+            a.download = name;
         }
     </script>
 </body>

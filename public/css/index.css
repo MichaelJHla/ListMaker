@@ -50,6 +50,7 @@
     cursor: grab;
     display: flex;
     align-items: center;
+    justify-content: center;
 
     background-color: lightblue;
     color: blue;

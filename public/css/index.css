@@ -7,6 +7,11 @@
 .up-down-buttons {
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
+}
+
+.up-button, .down-button, .delete-button {
+    cursor: pointer;
 }
 
 #sign-in-page {
@@ -19,4 +24,33 @@
 
 #single-list-page {
     display: none;
+}
+
+.list-item {
+    outline: 1px solid gray;
+    margin-bottom: 10px;
+
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.handle, .delete-button {
+    padding: 8px;
+    margin: 2px;
+    border-radius: 1000px;
+    border: none;
+}
+
+.delete-button {
+    background-color:lightpink;
+    color: red;
+}
+
+.handle {
+    cursor: grab;
+    display: flex;
+    align-items: center;
+
+    background-color: lightblue;
+    color: blue;
 }

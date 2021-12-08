@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +17,7 @@
         </form>
     </div>
     <div id="all-list-page">
-        <button class="sign-out-button">Sign Out</button>
+        <button class="sign-out-button">Sign Out <i class="fas fa-sign-out-alt"></i></button>
         <form id="new-list">
             <input type="text" id="new-list-name" required>
             <input type="submit" value="New List">
@@ -24,76 +25,24 @@
         <ul id="all-lists"></ul>
     </div>
     <div id="single-list-page">
-        <button class="sign-out-button">Sign Out</button>
-        <button id="back-to-lists">Back to Lists</button>
+        <button class="sign-out-button">Sign Out <i class="fas fa-sign-out-alt"></i></button>
+        <button id="back-to-lists">Back to Lists <i class="fas fa-reply"></i></button>
         <h1>List maker</h1>
         <h2 id="saving-text">Saving in <span id="save-count"></span></h2>
         <h2 id="list-name"></h2>
         <form id="new-item-form">
             <h3>New item: </h2>
             <input type="text" id="new-item">
-            <input type="submit" value="Add">
+            <button type="submit">Add <i class="fas fa-plus"></i></button>
         </form>
-        <button id="save">Save List</button>
-        <a href="" id="a">click here to download your list</a>
+        <button id="save">Save <i class="fas fa-save"></i></button>
+        <a href="" id="a" class="button"><button>Download List <i class="fas fa-file-download"></i></button></a>
         <ol id="single-list"></ol>
     </div>
 
+    <!-- jsDelivr :: Sortable :: Latest (https://www.jsdelivr.com/package/npm/sortablejs) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script>
-        $('#new-item-form').submit(function(e) {
-            e.preventDefault();
-            AddRow($('#new-item').val());
-        });
-
-        $('#sign-in').submit(function(e) {
-            e.preventDefault();
-
-            auth.signInWithEmailAndPassword($('#email').val(), "ListPassword")
-                .catch((error) => {
-                    if (error.code.includes("user-not-found")) {
-                        auth.createUserWithEmailAndPassword($('#email').val(), "ListPassword")
-                            .catch((error) => {
-                                window.alert(error.message);
-                            });
-                    } else {
-                        window.alert(error.message);
-                    }
-                });
-        });
-
-        function AddRow(s) {
-            let li = $('<li class="list-item"></li>');
-
-            let row = $('<div class="row"></div>');
-
-            let buttonDiv = $('<div class="up-down-buttons"></div>');
-            let upButton = $('<button class="up-button"><i class="fas fa-arrow-up"></i></div>');
-            upButton.click(function() {
-                li.insertBefore(li.prev());
-            });
-            buttonDiv.append(upButton);
-            let downButton = $('<button class="down-button"><i class="fas fa-arrow-down"></i></div>');
-            downButton.click(function() {
-                li.insertAfter(li.next());
-            });
-            buttonDiv.append(downButton);
-
-            let text = $('<p>' + s + '</p>');
-            $('#new-item').val('');
-
-            let deleteButton = $('<button class="delete-button"><i class="fas fa-trash"></i></button>');
-            deleteButton.click(function() {
-                li.remove();
-            });
-
-            row.append(buttonDiv, text, deleteButton);
-            li.append(row);
-
-            $('#single-list').append(li);
-        }
-    </script>
-
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
     <!-- Database CDN -->
@@ -123,32 +72,24 @@
         let auth = firebase.auth();
     </script>
     <script>
-        $('#save').click(function() {
-            saveList($('#list-name').html());
+        //Variables needed for the program like the time and the starting value for the countdown
+        var timer;
+        var autoSaveTimer = 5;
+        var countdown = autoSaveTimer;
 
-            if (timer == null) {
-                $("#saving-text").show();
-                window.alert("List created and saved");
-                startTimer();
-            }
+        //Sortable JS variables
+        var el = document.getElementById("single-list");
+        var sortable = Sortable.create(el, {
+            animation: 150,
+            handle: '.handle'
         });
 
-        function saveList(listName) {
-            let list = [];
-            $(".list-item").each(function() { list.push($(this).text()) });
-            database.ref(auth.currentUser.uid + "/" + listName).set(list);
+        //Message for confirmation dialogue box
+        var leaveMessage = "Your new list has not yet been saved. Leave this page without saving?";
 
-            createFile(list, $('#list-name').html() + '.txt', 'text/plain');
-        }
-
-        $('.sign-out-button').click(function() {
-            auth.signOut();
-        });
-
-        $('#back-to-lists').click(function() {
-            openAllListPage();
-        });
-
+        //Check for user's state change
+        //If the user is signed in, show their lists
+        //Otherwise, prompt to sign-in
         auth.onAuthStateChanged((user) => {
             $('#single-list').empty();
             if (user) {
@@ -158,6 +99,26 @@
             }
         });
 
+        //Add submit functionality to the sign in page
+        $('#sign-in').submit(function(e) {
+            e.preventDefault(); //Prevent the page from refreshing
+
+            //Add functionality for signing in
+            auth.signInWithEmailAndPassword($('#email').val(), "ListPassword")
+                .catch((error) => { //If the error is that there is no user for this email, create a new user with the email
+                    if (error.code.includes("user-not-found")) {
+                        auth.createUserWithEmailAndPassword($('#email').val(), "ListPassword")
+                            .catch((error) => {
+                                window.alert(error.message);
+                            });
+                    } else {
+                        window.alert(error.message);
+                    }
+                });
+        });
+
+        //Shows the proper sing-in elements
+        //Clear the timer so that is does not continue to run
         function openSignInPage() {
             $('#sign-in-page').show();
             $('#all-list-page').hide();
@@ -166,62 +127,134 @@
             stopTimer();
         }
 
-        function openAllListPage() {
-            $('#sign-in-page').hide();
-            $('#all-list-page').show();
-            $('#single-list-page').hide();
+        //Add submit functionality to add a new list item
+        $('#new-item-form').submit(function(e) {
+            e.preventDefault();
+            AddRow($('#new-item').val());
+        });
 
-            $('#all-lists').empty();
+        //This function is responsible for creating each list item for a specific user list
+        function AddRow(s) {
+            let li = $('<li class="list-item"></li>'); //Create new list item
+            let row = $('<div class="row"></div>'); //This div holds all the buttons
+            let dragDiv = $('<div class="handle"><i class="fas fa-bars"></i></div>'); //Create the div for drag
 
-            $('#save-count').empty();
+            let text = $('<p>' + s + '</p>'); //Fill in the text for the item
+            $('#new-item').val('');//Clear the text in the new list item text box
 
-            stopTimer();
-
-            database.ref(auth.currentUser.uid).get().then(function(s) {
-                if (s.val() != null) {
-                    var lists = Object.keys(s.val());
-                    for (var i = 0; i < lists.length; i++) {
-                        createListItem(lists[i]);
-                    }
-                }
+            //Add a delete button
+            let deleteButton = $('<button class="delete-button"><i class="fas fa-trash"></i></button>');
+            deleteButton.click(function() {
+                li.remove();
             });
+
+            //Append all the recently created elements to the list item
+            row.append(dragDiv, text, deleteButton);
+            li.append(row);
+
+            $('#single-list').append(li); //Append the list item to the full list
         }
 
+        //Save button listener
+        $('#save').click(function() {
+            saveList($('#list-name').html()); //Get the list name
+
+            //If there is no auto-save currently, then notify the user that their list has been saved
+            if (timer == null) {
+                $("#saving-text").show();
+                window.alert("List created and saved");
+                startTimer();
+            }
+        });
+
+        //Pushes each list item onto an array and upload that array to the user's database
+        function saveList(listName) {
+            let list = [];
+            $(".list-item").each(function() { list.push($(this).text()) });
+            database.ref(auth.currentUser.uid + "/" + listName).set(list);
+
+            //Saved the txt version of the list to blob to be exported
+            createFile(list, $('#list-name').html() + '.txt', 'text/plain');
+        }
+
+        //Button listener to sign the user out
+        $('.sign-out-button').click(function() {
+            if (verifyExit()) {
+                auth.signOut();
+            }
+        });
+
+        //Button listener to open the lists page
+        $('#back-to-lists').click(function() {
+            openAllListPage();
+        });
+
+        //This function is used to load every list the user has in their database
+        function openAllListPage() {
+            if (verifyExit()) {
+                //Show correct visual elements
+                $('#sign-in-page').hide();
+                $('#all-list-page').show();
+                $('#single-list-page').hide();
+
+                $('#all-lists').empty(); //Empty the list
+
+                stopTimer(); //Delete the currently running timer
+
+                $('#save-count').empty(); //Clear the number currently on the timer
+
+                //Once the database loads, append each list item
+                database.ref(auth.currentUser.uid).get().then(function(s) {
+                    if (s.val() != null) { //Do not attempt to load if their is no data for the user
+                        var lists = Object.keys(s.val());
+                        for (var i = 0; i < lists.length; i++) {
+                            createListItem(lists[i]);
+                        }
+                    }
+                });
+            }
+        }
+
+        //This function is used to create a list item for the All Lists page
+        // and append the new item to the end of the list
         function createListItem(listName) {
-            var li = $('<li></li>');
+            var li = $('<li></li>'); //Create new List item
 
-            li.append('<p>' + listName + '</p>');
+            li.append('<p>' + listName + '</p>'); //Append the name of the list to the list item
 
-            var viewButton = $('<button>View List</button>');
-            viewButton.attr("value", listName);
-            viewButton.click(function() {
+            var viewButton = $('<button>View List</button>'); //Create view button
+            viewButton.attr("value", listName); //The value attribute is used to identify the list
+            viewButton.click(function() { //When this button is clicked, it will open the full list
                 openSingleListPage(listName, false);
             });
-            li.append(viewButton);
+            li.append(viewButton); //Append the button to the list item
 
-            var deleteButton = $('<button>Delete List</button>');
-            deleteButton.attr("value", listName);
-            deleteButton.click(function() {
-                if (window.confirm("Delete list: " + listName + "?")) {
+            var deleteButton = $('<button>Delete List</button>'); //Create delete button
+            deleteButton.attr("value", listName); //The value attribute is used to identify the list
+            deleteButton.click(function() { //When this button is clicked, it will prompt the user to delete the list
+                if (window.confirm("Delete list: " + listName + "?")) { //Makes sure that the user really wants to delete the list
                     database.ref(auth.currentUser.uid + "/" + listName).remove().then(function() {
-                        openAllListPage();
+                        openAllListPage(); //After deleting the list, reload the list page
                     });
                 }
             });
-            li.append(deleteButton);
+            li.append(deleteButton); //Append the button to the list item
 
-            $('#all-lists').append(li);
+            $('#all-lists').append(li); //Append the list item to the page
         }
 
+        //Passes a list name and if it is a new list
         function openSingleListPage(listName, newList) {
+            //Set proper visuals
             $('#sign-in-page').hide();
             $('#all-list-page').hide();
             $('#single-list-page').show();
 
-            $('#single-list').empty();
+            $('#single-list').empty(); //Empty current list
 
-            $('#list-name').html(listName);
+            $('#list-name').html(listName); //Set the list name text
 
+            //If it is not a new list, load the list
             if (!newList) {
                 database.ref(auth.currentUser.uid + "/" + listName).get().then(function(s) {
                     var data = s.val();
@@ -229,45 +262,50 @@
                         AddRow(data[i]);
                     }
 
-                    countdown = 5;
-
+                    //Start time and show the auto-save text
                     startTimer();
-
                     $("#saving-text").show();
 
+                    //Needed in order to save the current list as the file in the blob queue
                     saveList(listName);
                 });
             } else {
+                //Hide the aut-save text
                 $('#saving-text').hide();
             }
         }
 
+        //Prevent the default for the form
+        //Open a new list page using the name from the text box
         $('#new-list').submit(function(e) {
             e.preventDefault();
-
             openSingleListPage($('#new-list-name').val(), true);
         });
 
-        var timer;
-        var countdown = 5;
-
+        //Start the timer and show the timer text
         function startTimer() {
+            countdown = autoSaveTimer; //Reset the timer
+
+            //Set a new timer and on every second, decrement the countdown variable until it is 0
             timer = setInterval(function() {
                 if (countdown <= 1) {
                     saveList($('#list-name').html());
-                    countdown = 5;
+                    countdown = autoSaveTimer;
                 } else {
                     countdown--;
                 }
                 $('#save-count').html(countdown);
-            }, 1000);
+            }, 1000); //One second timer
         }
 
+        //Clears the timer
         function stopTimer() {
             clearInterval(timer);
-            timer = null;
+            timer = null; //Needed to truly set the timer variable to null
         }
 
+        //This function pulls the data from the passed list
+        // and makes it the currently saved file on the blob
         function createFile(list, name, type) {
             var fileString = "";
 
@@ -279,6 +317,28 @@
             var file = new Blob([fileString], {type: type});
             a.href = URL.createObjectURL(file);
             a.download = name;
+        }
+
+        //used to verify that the user is ok exiting without saving
+        //Does not show pop-up unless the user is viewing a list and the list has not been saved
+        function verifyExit() {
+            if (unsavedList()) {
+                return window.confirm(leaveMessage);
+            } else {
+                return true;
+            }
+        }
+
+        //Show dialogue box to prevent user from leaving without saving
+        $(window).bind('beforeunload', function(){
+            if (unsavedList()) {
+                return leaveMessage;
+            }
+        });
+
+        //Verifies if the user is currently editing an unsaved list
+        function unsavedList() {
+            return $('#single-list-page').is(':visible') && timer == null;
         }
     </script>
 </body>

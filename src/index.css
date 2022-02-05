@@ -1,0 +1,250 @@
+/*GENERAL STYLING*/
+html {
+    background-color: #dddddd;
+}
+
+a {
+    all: unset;
+}
+
+h1, h2, h3 {
+    font-family: raleway,sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    color: #281005;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+button {
+    border: none;
+    font-family: arial;
+    font-size: 1em;
+    color: white;
+    background-color: #37A69D;
+    padding: .25em .5em .25em .5em;
+    border-radius: 50em;
+    opacity: 60%;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 100%;
+}
+
+/*SIGN IN PAGE*/
+#sign-in-page {
+    width: 70%;
+    margin: auto;
+    text-align: center;
+}
+
+/*HEADER*/
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar, .sidebar-element {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.sidebar-element {
+    margin: 0.5em;
+    cursor: pointer;
+}
+
+.sidebar-element svg {
+    padding: 0.5em;
+    border-radius: 100em;
+    margin-left: .75em;
+    color: #FFFFFF;
+    background-color: #37A69D;
+    opacity: 60%;
+}
+
+.sidebar-element:hover svg {
+    opacity: 100%;
+}
+
+/*ALL LIST PAGE*/
+#all-lists {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#new-list-form {
+    margin: auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+.all-lists-item {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+
+    border: 1px solid #5F6973;
+    margin-bottom: 0.25em;
+    background-color: #FFFFFF;
+
+    font-family: open-sans, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+    padding: 0.5em;
+    -moz-border-radius: 1.5em; 
+    -webkit-border-radius: 1.5em; 
+    -khtml-border-radius: 1.5em; 
+    -o-border-radius: 1.5em;
+    border-radius: 1.5em;
+
+    cursor: pointer;
+}
+
+.open-list {
+    border: none;
+    color: #37A69D;
+    font-size: 1em;
+    background-color: inherit;
+    opacity: 60%;
+}
+
+.all-lists-item:hover .open-list {
+    opacity: 100%;
+}
+
+#new-item-form input {
+    font-family: arial;
+    font-size: 1em;
+    color: #5F6973;
+}
+
+/*SINGLE LIST PAGE*/
+.list-name {
+    text-align: center;
+    font-size: 2.5em;
+    font-family: raleway,sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    color: #281005;
+    margin: .5em;
+}
+
+#status-message {
+    font-family: arial;
+    text-align: center;
+    font-size: 1em;
+    position: fixed;
+    padding: 0.5em;
+    border-radius: 100em;
+    color: white;
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 1;
+    border: 1px solid black;
+}
+
+#list-options {
+    margin: auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+#unsaved-changes {
+    margin: 0;
+    padding-left: 1em;
+    color: #5F6973;
+    font-family: open-sans, sans-serif;
+}
+
+#new-item-form {
+    margin: auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    padding-top: 1em;
+}
+
+#list {
+    padding-top: 1.3em;
+    padding-bottom: 3em;
+    width: 80%;
+    margin: auto;
+}
+
+.list-item {
+    font-size: 1.5em;
+    font-family: open-sans, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.row {
+    border: 1px solid #5F6973;
+    margin-bottom: 0.25em;
+    background-color: #FFFFFF;
+
+    padding: 0.25em;
+    -moz-border-radius: 1.5em; 
+    -webkit-border-radius: 1.5em; 
+    -khtml-border-radius: 1.5em; 
+    -o-border-radius: 1.5em;
+    border-radius: 1.5em;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.move-elements {
+    display: flex;
+    align-items: center;
+}
+
+.handle {
+    cursor: grab;
+    color: #37A69D;
+    font-size: 1.3em;
+    padding: 0.5em;
+    margin-right: 0.25em;
+}
+
+.item-name-wrapper {
+    margin: auto;
+}
+
+.item-name {
+    font-family: open-sans, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.trash-button {
+    border: none;
+    color: #D7073D;
+    font-size: 1em;
+    background-color: inherit;
+}
+
+#list li:not(.list-item) {
+    visibility: hidden;
+}

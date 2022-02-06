@@ -134,13 +134,16 @@ header {
 
 /*SINGLE LIST PAGE*/
 .list-name {
+    display: block;
     text-align: center;
-    font-size: 2.5em;
+    font-size: 2em;
     font-family: raleway,sans-serif;
     font-weight: 300;
     font-style: normal;
     color: #281005;
-    margin: .5em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;
 }
 
 #status-message {

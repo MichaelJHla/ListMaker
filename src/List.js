@@ -12,6 +12,7 @@ class List extends React.Component {
         super(props);
         this.state = {
             listName: '',
+            recentSavedListName: '',
             listItems: [],
             recentSavedItems: [],
             message: '',
@@ -47,6 +48,7 @@ class List extends React.Component {
                 }
                 this.setState({
                     listName: val['name'],
+                    recentSavedListName: val['name'],
                     loaded: true
                 });
             }
@@ -113,10 +115,11 @@ class List extends React.Component {
 
     //Saves the new list to the database and updates the current 'saved list' state
     saveList() {
-        set(ref(database, this.props.userID + '/' + this.props.listID + '/list'), this.state.listItems).then(() => {
+        set(ref(database, this.props.userID + '/' + this.props.listID + '/'), {list: this.state.listItems, name: this.state.listName}).then(() => {
             const arr = this.state.listItems.slice();
             this.setState({
-                recentSavedItems: arr
+                recentSavedItems: arr,
+                recentSavedListName: this.state.listName
             });
             this.changeMessage(true);
             this.props.setUnsavedChanges(false);
@@ -158,6 +161,10 @@ class List extends React.Component {
         return true;
     }
 
+    checkIfSavedNameEqualsCurrentName() {
+        return this.state.listName == this.state.recentSavedListName;
+    }
+
     //Clear the message
     clearMessage() {
         this.setState({
@@ -184,7 +191,11 @@ class List extends React.Component {
                 //If it is the user's list, display the list along with editing options
                 return (
                     <div>
-                        <h3 className='list-name'>{this.state.listName}</h3>
+                        <input type='text' className='list-name' onChange={(e) => {
+                            this.setState({listName: e.target.value}, () => {
+                                this.props.setUnsavedChanges(!this.checkIfSavedNameEqualsCurrentName());
+                            }); 
+                        }} value={this.state.listName} />
                         <h4 id='status-message' style={{backgroundColor: this.state.messageColor, display: this.state.display}}>{this.state.message}</h4>
                         <ListOptions deleteList={this.deleteList} createFile={this.createFile} saveList={this.saveList} unsavedChanges={this.props.unsavedChanges} />
                         <NewItemForm addNewItem={this.addNewItem} />

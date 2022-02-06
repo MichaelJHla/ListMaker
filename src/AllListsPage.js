@@ -20,7 +20,7 @@ function AllListsPage(props) {
             if (val != null) {
                 let m = new Map();
                 for (let l in val) {
-                    if (l !== userID) m.set(val[l]['name'], l);
+                    if (l !== userID) m.set(l, val[l]['name']);
                 }
                 updateUserMap(m);
             } else {
@@ -34,11 +34,6 @@ function AllListsPage(props) {
     // then the user is navigated to the new list
     const createNewList = (listName) => {
         const trimmedListName = listName.trim();
-        //Prevents two lists of the same name
-        if (userMap != null && Array.from(userMap.keys()).includes(trimmedListName)) {
-            window.alert('List names must be unique');
-            return;
-        }
         
         const newID = makeID(6);
         const newObj = {
@@ -54,7 +49,7 @@ function AllListsPage(props) {
 
     if (loaded) { //Display proper info once loaded
         if (userMap != null) {
-            const all = Array.from(userMap.keys()).map(l => <AllListsItem listID={userMap.get(l)} listItemText={l} key={l} userID={userID} />);
+            const all = Array.from(userMap.keys()).map(l => <AllListsItem listID={l} listItemText={userMap.get(l)} key={l} userID={userID} />);
 
             return (
                 <div id='all-lists-page'>

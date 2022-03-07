@@ -1,16 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FaUserPlus } from 'react-icons/fa';
 
 function CreateAccountHeaderComponent(props) {
+    const nav = useNavigate();
     return (
-        <Link to={'/'}>
-            <div className='sidebar-element create-account'>
-                <h2>Create Account</h2>
+        <div className='sidebar-element create-account' onClick={() => nav('/')}>
+            <h2>Create Account</h2>
+            <div className='svg-container'>
                 <FaUserPlus />
             </div>
-        </Link>
-        
+        </div>
     );
 }
 

@@ -28,6 +28,8 @@ function AccountPage(props) {
     const [showMessage, updateShowMessage] = useState(false);
     const [saveSuccessful, updateSaveSuccessful] = useState(true);
 
+    const [isLoading, updateIsLoading] = useState(false);
+
     const nav = useNavigate();
 
     useEffect(() => {
@@ -57,19 +59,24 @@ function AccountPage(props) {
     const submitName = (newName) => {
 
         const updateName = httpsCallable(functions, 'updateName');
+        updateIsLoading(true);
         updateName({name: newName}).then(() => {
+            updateIsLoading(false);
             updateSuccessMessage(NameSuccess);
             changeMessage(true);
         });
     }
 
     const submitEmail = (newEmail) => {
+        updateIsLoading(true);
         updateEmail(auth.currentUser, newEmail).then(() => {
+            updateIsLoading(false);
             updateSuccessMessage(EmailSuccess);
             changeMessage(true);
             modal = null;
             updateShowModal(false);
         }).catch((error) => {
+            updateIsLoading(false);
             if (error.code.includes('requires-recent-login')) {
                 modal = <AuthenticateModal closeModal={closeModal} prevVal={newEmail} submitFunction={submitEmail} />
                 updateShowModal(true);
@@ -81,7 +88,9 @@ function AccountPage(props) {
     }
 
     const submitPassword = (newPassword) => {
+        updateIsLoading(true);
         updatePassword(auth.currentUser, newPassword).then(() => {
+            updateIsLoading(false);
             updateSuccessMessage(PasswordSuccess);
             changeMessage(true);
             modal = null;
@@ -89,6 +98,7 @@ function AccountPage(props) {
             updateUserPassword1('');
             updateUserPassword2('');
         }).catch((error) => {
+            updateIsLoading(false);
             if (error.code.includes('requires-recent-login')) {
                 modal = <AuthenticateModal closeModal={closeModal} prevVal={newPassword} submitFunction={submitPassword} />
                 updateShowModal(true);
@@ -128,7 +138,7 @@ function AccountPage(props) {
             </div>
             {showMessage ? <StatusComponent success={saveSuccessful} successMessage={successMessage} failureMessage={failMessage} /> : null}
             {showModal ? modal : null}
-            <Loading />
+            {isLoading ? <Loading /> : null}
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { StatusComponent } from './StatusComponent';
 import { NewItemForm } from './NewItemForm';
 import TextareaAutosize from 'react-textarea-autosize';
 import { httpsCallable } from 'firebase/functions';
+import { Loading } from './Loading';
 
 class List extends React.Component {
     constructor (props) {
@@ -18,7 +19,8 @@ class List extends React.Component {
             recentSavedListName: '',
             listItems: [],
             recentSavedItems: [],
-            loaded: false,
+            loaded: false, //if the page has loaded
+            loading: false, //if an action is loading
             ol: true,
             showMessage: false,
             saveSuccessful: true,
@@ -144,6 +146,10 @@ class List extends React.Component {
     //Deletes the entire list after confirming with the user
     deleteList() {
         if (window.confirm('Are you sure you want to delete this list?')) {
+            this.setState({
+                loading: true
+            })
+
             const del = httpsCallable(functions, 'deleteList');
 
             del({listID: this.props.listID}).then(() => {
@@ -166,6 +172,10 @@ class List extends React.Component {
     saveList() {
         const save = httpsCallable(functions, 'saveList');
 
+        this.setState({
+            loading: true
+        });
+
         save({listID: this.props.listID, list: this.state.listItems, name: this.state.listName, ol: this.state.ol}).then(() => {
             const arr = this.state.listItems.slice();
 
@@ -173,7 +183,8 @@ class List extends React.Component {
             this.props.setUnsavedChanges(false);
             this.setState({
                 recentSavedItems: arr,
-                recentSavedListName: this.state.listName
+                recentSavedListName: this.state.listName,
+                loading: false
             });
         }).catch(() => {
             this.changeMessage(false);
@@ -202,7 +213,8 @@ class List extends React.Component {
     changeMessage(success) {
         this.setState({
             showMessage: true,
-            saveSuccessful: success
+            saveSuccessful: success,
+            loading: false
         });
         setTimeout(() => {
             this.setState({
@@ -234,7 +246,7 @@ class List extends React.Component {
     render() {
         if (!this.state.loaded) { //Display loading message until database is loaded
             return (
-                <h3>Loading...</h3>
+                <Loading />
             );
         } else if (this.state.listName != null) { //Display list on successful load
             const fullList = this.state.listItems.map((item, index) => <ListItem 
@@ -291,6 +303,7 @@ class List extends React.Component {
                         <DragDropContext onDragEnd={this.handleOnDragEnd}>
                             {l}
                         </DragDropContext>
+                        {this.state.loading ? <Loading /> : null}
                     </div>
                 );
             } else {

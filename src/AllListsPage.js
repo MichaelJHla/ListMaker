@@ -7,12 +7,14 @@ import { NewListForm } from './NewListForm';
 import { MainHeader } from './MainHeader';
 import { makeID } from './MakeID';
 import { httpsCallable } from 'firebase/functions';
+import { Loading } from './Loading';
 
 function AllListsPage(props) {
     //Create new state to represent the array of lists
     const [userMap, updateUserMap] = useState(new Map()); //This map assigns the key to the list name, and the value as the listID
     const [userName, updateUserName] = useState('');
     const [loaded, setLoaded] = useState(false); //Tracks if data is loaded from database
+    const [loading, updateLoading] = useState(false);
     const { userID } = useParams();
     const nav = useNavigate();
 
@@ -38,6 +40,8 @@ function AllListsPage(props) {
     //Creates a new list for the user in the database with an example item,
     // then the user is navigated to the new list
     const createNewList = (listName) => {
+        updateLoading(true);
+
         const trimmedListName = listName.trim();
         
         const newID = makeID(6);
@@ -69,14 +73,15 @@ function AllListsPage(props) {
                 <h1>{userName !== '' ? userName + "'s Lists" : 'All Lists'}</h1>
                 <hr />
                 {newListForm}
-                {all.length > 0 ? <div id='all-lists'>{all}</div> : <h3>No list found</h3> }
+                {all.length > 0 ? <div id='all-lists'>{all}</div> : <h3>No list found</h3>}
+                {loading ? <Loading /> : null}
             </div>
         );
     } else { //Display loading text while loading data
         return(
             <div id='all-lists-page'>
                 <MainHeader />
-                <h3>Loading...</h3>
+                <Loading />
             </div> 
         );
     }

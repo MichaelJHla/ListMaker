@@ -59,6 +59,22 @@ button {
     cursor: pointer;
 }
 
+#loading-div {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+}
+
+#spinner {
+    width: 6vw;
+    position: fixed;
+    top: 40vh;
+    left: 0;
+    margin-left: 47vw;
+}
+
 /*SIGN IN PAGE*/
 #sign-in-page {
     width: 70%;

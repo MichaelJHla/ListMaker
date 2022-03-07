@@ -1,8 +1,11 @@
 import React from "react";
+import spinner from './loading.gif';
 
 function Loading(props) {
     return (
-        <img id="loading-img" alt='loading' src="./loading-buffering.gif" />
+        <div id='loading-div'>
+            <img id='spinner' alt='loading' src={spinner} />
+        </div>
     );
 }
 

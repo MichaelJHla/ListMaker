@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth, functions } from './FirebaseConfig';
+import { Loading } from './Loading';
 
 function SignInPage(props) {
     const nav = useNavigate();
+
+    const [isLoading, updateIsLoading] = useState(false);
 
     useEffect(() => { //If the user is signed in, then load their lists
         if (auth.currentUser) {
@@ -23,6 +26,8 @@ function SignInPage(props) {
             <form id='login-form' onSubmit={(e) => {
                 e.preventDefault();
                 document.activeElement.blur();
+
+                updateIsLoading(true);
 
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
@@ -47,7 +52,6 @@ function SignInPage(props) {
                                     }
 
                                     makeList(newObj).then((result) => {
-                                        console.log(result);
                                         nav('/' + auth.currentUser.uid);
                                     });
                                 } else {
@@ -56,6 +60,7 @@ function SignInPage(props) {
                             });
                         });
                     } else {
+                        updateIsLoading(false);
                         window.alert(error.message);
                     }
                 });
@@ -79,6 +84,7 @@ function SignInPage(props) {
                     }}>Forgot Password?</button>
                 </div>
             </form>
+            {isLoading ? <Loading /> : null}
         </div>
     );
 }

@@ -13,6 +13,7 @@ function AllListsPage(props) {
     //Create new state to represent the array of lists
     const [userMap, updateUserMap] = useState(new Map()); //This map assigns the key to the list name, and the value as the listID
     const [userName, updateUserName] = useState('');
+    const [collabMap, updateCollabMap] = useState(new Map());
     const [loaded, setLoaded] = useState(false); //Tracks if data is loaded from database
     const [loading, updateLoading] = useState(false);
     const { userID } = useParams();
@@ -26,10 +27,21 @@ function AllListsPage(props) {
             if (val != null) {
                 if (val['name'] != null) updateUserName(val['name']);
                 let m = new Map();
-                for (let l in val) {
-                    if (l !== userID && l !== 'name') m.set(l, val[l]['name']);
+                for (const l in val) {
+                    if (l !== userID && l !== 'name'  && l !== 'collaborativeLists') m.set(l, val[l]['name']);
                 }
                 updateUserMap(m);
+
+                let c = new Map();
+
+                if (val['collaborativeLists'] != null) {
+                    for (const l in val['collaborativeLists']) {
+                        c.set(l, val['collaborativeLists'][l]);
+                        console.log(val['collaborativeLists'][l] + " " + l);
+                    }
+                }
+                console.log(c);
+                updateCollabMap(c);
             } else {
                 updateUserMap(null);
             }
@@ -68,13 +80,25 @@ function AllListsPage(props) {
             all = Array.from(userMap.keys()).map(l => <AllListsItem listID={l} listItemText={userMap.get(l)} key={l} userID={userID} />);
         }
 
+        let collab = [];
+        if (collabMap != null) {
+            collab = Array.from(collabMap.keys()).map(c => <AllListsItem findName={true} listID={c} listItemText={''} key={c} userID={collabMap.get(c)} />);
+        }
+
         return (<div id='all-lists-page'>
                 <MainHeader />
                 <h1>{userName !== '' ? userName + "'s Lists" : 'All Lists'}</h1>
                 <hr />
                 {newListForm}
-                {all.length > 0 ? <div id='all-lists'>{all}</div> : <h3>No list found</h3>}
                 {loading ? <Loading /> : null}
+                {all.length > 0 ? <div className='list-section' id='all-lists'>{all}</div> : <h3>No list found</h3>}
+                {(auth.currentUser && userID === auth.currentUser.uid) ?
+                    <>
+                        <h1>Collaborative Lists</h1>
+                        <hr />
+                        {collab.length > 0 ? <div className='list-section' id='collaborative-lists'>{collab}</div> : <h3>No list found</h3>}
+                    </>
+                : null}
             </div>
         );
     } else { //Display loading text while loading data

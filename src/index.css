@@ -167,13 +167,19 @@ button {
 }
 
 #close-icon {
-    position: relative;
+    position: absolute;
     left: 90%;
+    top: 20px;
     cursor: pointer;
 }
 
 #authenticate-modal p {
     margin: 0;
+}
+
+#delete-account {
+    margin-top: 2em;
+    background-color: #BD1D1D;
 }
 
 /*HEADER*/
@@ -217,10 +223,14 @@ header {
 }
 
 /*ALL LIST PAGE*/
-#all-lists {
+.list-section {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.all-list-spinner {
+    height: 1em;
 }
 
 #new-list-form {
@@ -276,6 +286,38 @@ header {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 0.5em;
+}
+
+#collaborators-modal {
+    background-color: white;
+    padding: 2em;
+    width: 60%;
+    border-radius: 2em;
+    position: fixed;
+    top: 6em;
+    left: 15%;
+    text-align: center;
+}
+
+#collaborators-modal h2, #collaborators-modal h3 {
+    color: #00223F;
+}
+
+#collaborators-modal h2 {
+    text-decoration: underline;
+    font-size: 1.5em;
+}
+
+#collaborators-modal #spinner {
+    all: unset;
+    width: 10%;
+    margin: auto;
+}
+
+.collaborator {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #status-message {

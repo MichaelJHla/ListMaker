@@ -37,7 +37,7 @@ class ListItem extends React.Component {
 
     render() {
         //Checks if the user is looking at their own list, or at someone else's list
-        if ((auth.currentUser && auth.currentUser.uid === this.props.userID) || this.props.guestList) {
+        if ((auth.currentUser && auth.currentUser.uid === this.props.userID) || this.props.guestList || (auth.currentUser && this.props.collaborators.includes(auth.currentUser.uid))) {
             //Display editing options if it is the user's own list
             return (
                 <Draggable draggableId={this.props.itemName} index={this.props.index}>

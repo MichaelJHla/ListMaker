@@ -6,8 +6,6 @@ function ShareHeaderComponent(props) {
         <div className='sidebar-element share' onClick={() => {
             if (navigator.canShare) {
                 navigator.share({
-                    title: 'My Rank Lists',
-                    text: 'View my lists',
                     url: window.location.href,
                 });
             } else {

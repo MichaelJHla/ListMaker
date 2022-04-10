@@ -52,10 +52,10 @@ function SignInPage(props) {
                                     }
 
                                     makeList(newObj).then((result) => {
-                                        nav('/' + auth.currentUser.uid);
+                                        window.location.replace('/' + auth.currentUser.uid);
                                     });
                                 } else {
-                                    nav('/' + auth.currentUser.uid);
+                                    window.location.replace('/' + auth.currentUser.uid);
                                 }
                             });
                         });

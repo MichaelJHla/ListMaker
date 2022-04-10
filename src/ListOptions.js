@@ -2,6 +2,7 @@
 import React from 'react';
 import { FaSave, FaFileDownload, FaTrashAlt, FaShareAlt } from 'react-icons/fa';
 import Switch from 'react-switch';
+import { auth } from './FirebaseConfig';
 
 function ListOptions(props) {
     return (
@@ -24,13 +25,14 @@ function ListOptions(props) {
                         height: '100%'}
                     }>ul</span>}
                 />
+                <button id='share-list' onClick={() => props.shareList()}>Share <FaShareAlt /></button>
                 <a href='' id='a' className='button'><button id='download-list' onClick={() => props.createFile()}>Download <FaFileDownload /></button></a>
             </div>
             { !props.guestList ? 
             <div className='options'>
                 <button id='save-list' onClick={() => props.saveList()}>Save <FaSave /></button>
-                <button id='share-list' onClick={() => props.shareList()}>Share <FaShareAlt /></button>
-                <button id='delete-list' onClick={() => props.deleteList()}>Delete <FaTrashAlt /></button>
+                { auth.currentUser.uid === props.userID ? <button id='open-modal' onClick={() => props.openModal()}>Collaborators</button> : null }
+                { auth.currentUser.uid === props.userID ?<button id='delete-list' onClick={() => props.deleteList()}>Delete <FaTrashAlt /></button> : null }
             </div> : null }
             { props.guestList ? <span>Create Account to save the list!<br />List will delete when you close the tab.</span> : null }
             <div id='unsaved-placeholder'>

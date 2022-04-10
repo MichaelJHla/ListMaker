@@ -4,8 +4,6 @@ import { List } from './List';
 import { MainHeader } from './MainHeader';
 import { auth } from './FirebaseConfig';
 
-let unsaved = false;
-
 function SingleListPage(props) {
     const [unsavedChanges, setUnsavedChanges] = useState(false);
     const { userID } = useParams();
@@ -13,7 +11,6 @@ function SingleListPage(props) {
     const nav = useNavigate();
 
     useEffect(() => {
-        unsaved = unsavedChanges;
         if ((userID ==='guest' && listID==='list') && auth.currentUser) {
             nav('/' + auth.currentUser.uid);
         }
@@ -30,14 +27,5 @@ function SingleListPage(props) {
         </div>
     );
 }
-
-window.addEventListener('beforeunload', function (e) {
-    if (unsaved){
-        // Cancel the event
-        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-        // Chrome requires returnValue to be set
-        e.returnValue = '';
-    }
-});
 
 export { SingleListPage };

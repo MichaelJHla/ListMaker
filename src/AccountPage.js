@@ -3,7 +3,7 @@ import { MainHeader } from './MainHeader';
 import { ref, get, child } from 'firebase/database';
 import { auth, database, functions } from './FirebaseConfig';
 import { AuthenticateModal } from './AuthenticateModal';
-import { updateEmail, updatePassword } from 'firebase/auth';
+import { deleteUser, updateEmail, updatePassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { StatusComponent } from './StatusComponent';
 import { AccountForm } from './AccountForm';
@@ -75,6 +75,9 @@ function AccountPage(props) {
             changeMessage(true);
             modal = null;
             updateShowModal(false);
+
+            const updateEmailInDatabase = httpsCallable(functions, 'updateEmailInDatabase');
+            updateEmailInDatabase();
         }).catch((error) => {
             updateIsLoading(false);
             if (error.code.includes('requires-recent-login')) {
@@ -109,6 +112,25 @@ function AccountPage(props) {
         });
     }
 
+    const deleteCurrentUser = () => {
+        if (window.confirm("Are you sure you want to delete your account? This is permanent and all data associated with your account will be deleted.")) {
+            updateIsLoading(true);
+            deleteUser(auth.currentUser).then(() => {
+                nav('/');
+            }).catch((error) => {
+                console.log(error);
+                updateIsLoading(false);
+                if (error.code.includes('requires-recent-login')) {
+                    modal = <AuthenticateModal closeModal={closeModal} submitFunction={deleteCurrentUser} />
+                    updateShowModal(true);
+                } else {
+                    updateFailMessage(error.message);
+                    changeMessage(false);
+                }
+            });
+        }
+    };
+
     return (
         <div id='account-page'>
             <MainHeader />
@@ -135,6 +157,8 @@ function AccountPage(props) {
                     <input type='password' value={userPassword2} onChange={(e) => updateUserPassword2(e.target.value)} placeholder='Confirm Password' required />
                     <button type='submit'>Update</button>
                 </form>
+
+                <button id='delete-account' onClick={() => deleteCurrentUser()}>Delete Account</button>
             </div>
             {showMessage ? <StatusComponent success={saveSuccessful} successMessage={successMessage} failureMessage={failMessage} /> : null}
             {showModal ? modal : null}

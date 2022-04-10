@@ -10,6 +10,7 @@ import { NewItemForm } from './NewItemForm';
 import TextareaAutosize from 'react-textarea-autosize';
 import { httpsCallable } from 'firebase/functions';
 import { Loading } from './Loading';
+import { CollaboratorsModal } from './CollaboratorsModal';
 
 class List extends React.Component {
     constructor (props) {
@@ -24,7 +25,10 @@ class List extends React.Component {
             ol: true,
             showMessage: false,
             saveSuccessful: true,
-            saveMessage: 'List saved!'
+            saveMessage: 'List saved!',
+            collaborators: [],
+            collaboratorsEmails: [],
+            showModal: false
         }
         this.handleOnDragEnd = this.handleOnDragEnd.bind(this);
         this.addNewItem = this.addNewItem.bind(this);
@@ -37,6 +41,10 @@ class List extends React.Component {
         this.updateListItemText = this.updateListItemText.bind(this);
         this.changeListType = this.changeListType.bind(this);
         this.shareList = this.shareList.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.addNewCollaborator = this.addNewCollaborator.bind(this);
+        this.removeCollaborator = this.removeCollaborator.bind(this);
     }
 
     changeListType(checked) {
@@ -80,6 +88,12 @@ class List extends React.Component {
                         this.setState({
                             listItems: val['list'],
                             recentSavedItems: val['list']
+                        });
+                    }
+                    if (val['collaborators'] != null) {
+                        this.setState({
+                            collaborators: Object.keys(val['collaborators']),
+                            collaboratorsEmails: Object.values(val['collaborators'])
                         });
                     }
                     this.setState({
@@ -170,13 +184,23 @@ class List extends React.Component {
 
     //Saves the new list to the database and updates the current 'saved list' state
     saveList() {
-        const save = httpsCallable(functions, 'saveList');
+        let save;
+        if (auth.currentUser.uid === this.props.userID) {
+            save = httpsCallable(functions, 'saveList');
+        } else if (this.state.collaborators.includes(auth.currentUser.uid)) {
+            save = httpsCallable(functions, 'saveCollaborativeList');
+        }
 
         this.setState({
             loading: true
         });
 
-        save({listID: this.props.listID, list: this.state.listItems, name: this.state.listName, ol: this.state.ol}).then(() => {
+        let collabObj = {};
+        for (let i = 0; i < this.state.collaborators.length; i++) {
+            collabObj[this.state.collaborators[i]] = this.state.collaboratorsEmails[i];
+        }
+
+        save({userID: this.props.userID, listID: this.props.listID, list: this.state.listItems, name: this.state.listName, ol: this.state.ol, collaborators: collabObj}).then(() => {
             const arr = this.state.listItems.slice();
 
             this.changeMessage(true);
@@ -194,8 +218,6 @@ class List extends React.Component {
     shareList() {
         if (navigator.canShare) {
             navigator.share({
-                title: 'My Rank Lists',
-                text: this.state.listName,
                 url: window.location.href,
             });
         } else {
@@ -243,6 +265,27 @@ class List extends React.Component {
         return this.state.listName === this.state.recentSavedListName;
     }
 
+    openModal() {
+        this.setState({showModal: true});
+    }
+
+    closeModal() {
+        this.setState({showModal: false});
+    }
+
+    addNewCollaborator(newCollaborator) {
+        let temp = this.state.collaboratorsEmails.slice();
+        temp.push(newCollaborator);
+        this.setState({collaboratorsEmails: temp});
+    }
+
+    removeCollaborator(collab) {
+        console.log(collab);
+        let temp = this.state.collaboratorsEmails.slice();
+        temp.splice(temp.indexOf(collab), 1);
+        this.setState({collaboratorsEmails: temp});
+    }
+
     render() {
         if (!this.state.loaded) { //Display loading message until database is loaded
             return (
@@ -257,31 +300,32 @@ class List extends React.Component {
                                                                         userID={this.props.userID} 
                                                                         deleteItem={this.deleteItem} 
                                                                         updateListItemText={this.updateListItemText}
+                                                                        collaborators={this.state.collaborators}
                                                                         />);
 
-            let l;
-            if (this.state.ol) {
-                l = <Droppable droppableId='items'>
-                    {(provided) => (
-                        <ol id='list' {...provided.droppableProps} ref={provided.innerRef}>
-                            {fullList}
-                            {provided.placeholder}
-                        </ol>
-                    )}
-                </Droppable>
-            } else {
-                l = <Droppable droppableId='items'>
-                    {(provided) => (
-                        <ul id='list' {...provided.droppableProps} ref={provided.innerRef}>
-                            {fullList}
-                            {provided.placeholder}
-                        </ul>
-                    )}
-                </Droppable>
-            }
-
             //Checks if the user is looking at their own list, or at someone else's list
-            if ((auth.currentUser && this.props.userID === auth.currentUser.uid) || this.props.guestList) { 
+            if ((auth.currentUser && this.props.userID === auth.currentUser.uid) || this.props.guestList || (auth.currentUser && this.state.collaborators.includes(auth.currentUser.uid))) { 
+                let l;
+                if (this.state.ol) {
+                    l = <Droppable droppableId='items'>
+                        {(provided) => (
+                            <ol id='list' {...provided.droppableProps} ref={provided.innerRef}>
+                                {fullList}
+                                {provided.placeholder}
+                            </ol>
+                        )}
+                    </Droppable>
+                } else {
+                    l = <Droppable droppableId='items'>
+                        {(provided) => (
+                            <ul id='list' {...provided.droppableProps} ref={provided.innerRef}>
+                                {fullList}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                    </Droppable>
+                }
+
                 //If it is the user's list, display the list along with editing options
                 return (
                     <div>
@@ -296,7 +340,18 @@ class List extends React.Component {
                             }
                         }} value={this.state.listName} />
                         <hr />
-                        <ListOptions guestList={this.props.guestList} deleteList={this.deleteList} createFile={this.createFile} saveList={this.saveList} shareList={this.shareList} unsavedChanges={this.props.unsavedChanges} changeListType={this.changeListType} checked={this.state.ol} />
+                        <ListOptions 
+                            openModal={this.openModal} 
+                            guestList={this.props.guestList} 
+                            deleteList={this.deleteList} 
+                            createFile={this.createFile} 
+                            saveList={this.saveList} 
+                            shareList={this.shareList} 
+                            unsavedChanges={this.props.unsavedChanges} 
+                            changeListType={this.changeListType} 
+                            checked={this.state.ol} 
+                            userID={this.props.userID}
+                        />
                         < hr />
                         {this.state.showMessage ? <StatusComponent success={this.state.saveSuccessful} successMessage={this.state.saveMessage} failureMessage='Save unsuccessful' /> : null }
                         <NewItemForm addNewItem={this.addNewItem} />
@@ -304,19 +359,41 @@ class List extends React.Component {
                             {l}
                         </DragDropContext>
                         {this.state.loading ? <Loading /> : null}
+                        {this.state.showModal ? <CollaboratorsModal 
+                                                    userID={this.props.userID} 
+                                                    listID={this.props.listID} 
+                                                    collaborators={this.state.collaboratorsEmails} 
+                                                    closeModal={this.closeModal}
+                                                    addNewCollaborator={this.addNewCollaborator}
+                                                    removeCollaborator={this.removeCollaborator}
+                                                /> 
+                                                : null}
                     </div>
                 );
             } else {
                 //If not the user's own list, display list with no interactive elements
-                return (
-                    <div>
-                        <h3 className='list-name'>{this.state.listName}</h3>
-                        <hr />
-                        <ol id='list'>
-                            {fullList}
-                        </ol>
-                    </div>
-                );       
+                if (this.state.ol) {
+                    return (
+                        <div>
+                            <h3 className='list-name'>{this.state.listName}</h3>
+                            <hr />
+                            <ol id='list'>
+                                {fullList}
+                            </ol>
+                        </div>
+                    ); 
+                } else {
+                    return (
+                        <div>
+                            <h3 className='list-name'>{this.state.listName}</h3>
+                            <hr />
+                            <ul id='list'>
+                                {fullList}
+                            </ul>
+                        </div>
+
+                    );
+                }
             }
         } else {
             //If no list is found, display error

@@ -1,36 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FaPlus } from 'react-icons/fa';
 
-class NewListForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            listName: ''
-        };
+function NewListForm(props) {
+    const [listName, updateListName] = useState('');
 
-        this.handleListNameChange = this.handleListNameChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleListNameChange(e) {
-        this.setState({
-            listName: e.target.value
-        });
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
-        this.props.createNewList(this.state.listName);
-    }
-
-    render() {
-        return (
-            <form id='new-list-form' onSubmit={this.handleSubmit}>
-                <h3>Create a new list: </h3>
-                <input type='text' placeholder='New list' onChange={this.handleListNameChange} required />
-                <button type='submit'>Create list</button>
-            </form>
-        );
-    }
+    return (
+        <form id='new-list-form' onSubmit={(e) => {
+            e.preventDefault();
+            document.activeElement.blur();
+            props.createNewList(listName);
+        }}>
+            <input type='text' placeholder='New list' onChange={(e) => updateListName(e.target.value)} required />
+            <button type='submit'><FaPlus />Add</button>
+        </form>
+    );
 }
 
 export { NewListForm };

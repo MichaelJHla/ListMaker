@@ -9,12 +9,16 @@ function LogoutHeaderComponent(props) {
 
     return (
         <div className='sidebar-element logout' onClick={() => {
+            if (props.unsavedChanges && !window.confirm('You have unsaved changes. Are you sure you want to leave this page?')) return;
+            
             signOut(auth).then(() => {
                 nav('/');
             });
         }}>
             <h2>Logout</h2>
-            <FaSignOutAlt />
+            <div className='svg-container'>
+                <FaSignOutAlt />
+            </div>
         </div>
     );
 }

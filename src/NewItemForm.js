@@ -21,13 +21,15 @@ class NewItemForm extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
         this.props.addNewItem(this.state.item);
-        document.querySelector('input').value = '';
+        this.setState({
+            item: ''
+        });
     }
 
     render() {
         return (
             <form id='new-item-form' onSubmit={this.handleSubmit}>
-                <input type='text' placeholder='New item' onChange={this.handleItemChange} required />
+                <input type='text' placeholder='New item' onChange={this.handleItemChange} value={this.state.item} required />
                 <button type='submit'>Add <FaPlus /></button>
             </form>
         );

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { auth, functions } from './FirebaseConfig';
-import { Loading } from './Loading';
+import { auth, functions } from '../FirebaseConfig';
+import { Loading } from '../Loading';
 
 function SignInPage(props) {
     const nav = useNavigate();

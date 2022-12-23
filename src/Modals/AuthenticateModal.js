@@ -1,7 +1,7 @@
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import React, { useState } from "react";
 import { FaTimesCircle } from "react-icons/fa";
-import { auth } from "./FirebaseConfig";
+import { auth } from "../FirebaseConfig";
 
 function AuthenticateModal(props) {
     const [authenticatePassword, updateAuthenticatePassword] = useState('');

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { MainHeader } from './MainHeader';
+import { MainHeader } from '../Components/MainHeader';
 import { ref, get, child } from 'firebase/database';
-import { auth, database, functions } from './FirebaseConfig';
-import { AuthenticateModal } from './AuthenticateModal';
+import { auth, database, functions } from '../FirebaseConfig';
+import { AuthenticateModal } from '../Modals/AuthenticateModal';
 import { deleteUser, updateEmail, updatePassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { StatusComponent } from './StatusComponent';
-import { AccountForm } from './AccountForm';
+import { StatusComponent } from '../Components/StatusComponent';
+import { AccountForm } from '../Forms/AccountForm';
 import { httpsCallable } from 'firebase/functions';
-import { Loading } from './Loading';
+import { Loading } from '../Loading';
 
 let modal = null;
 

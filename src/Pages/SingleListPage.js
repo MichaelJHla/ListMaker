@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { List } from './List';
-import { MainHeader } from './MainHeader';
-import { auth } from './FirebaseConfig';
+import { List } from '../Components/List';
+import { MainHeader } from '../Components/MainHeader';
+import { auth } from '../FirebaseConfig';
 
 function SingleListPage(props) {
     const [unsavedChanges, setUnsavedChanges] = useState(false);

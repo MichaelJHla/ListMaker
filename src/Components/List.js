@@ -1,16 +1,16 @@
 import React from 'react';
-import { database, auth, functions } from './FirebaseConfig';
+import { database, auth, functions } from '../FirebaseConfig';
 import { ref, child, get, set } from 'firebase/database';
 import { arrayMoveImmutable } from 'array-move';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { ListOptions } from './ListOptions';
 import { ListItem } from './ListItem';
 import { StatusComponent } from './StatusComponent';
-import { NewItemForm } from './NewItemForm';
+import { NewItemForm } from '../Forms/NewItemForm';
 import TextareaAutosize from 'react-textarea-autosize';
 import { httpsCallable } from 'firebase/functions';
-import { Loading } from './Loading';
-import { CollaboratorsModal } from './CollaboratorsModal';
+import { Loading } from '../Loading';
+import { CollaboratorsModal } from '../Modals/CollaboratorsModal';
 
 class List extends React.Component {
     constructor (props) {

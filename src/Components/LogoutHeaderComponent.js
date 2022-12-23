@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { auth } from './FirebaseConfig';
+import { auth } from '../FirebaseConfig';
 import { signOut } from 'firebase/auth';
 
 function LogoutHeaderComponent(props) {

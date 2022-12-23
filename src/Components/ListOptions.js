@@ -2,7 +2,7 @@
 import React from 'react';
 import { FaSave, FaFileDownload, FaTrashAlt, FaShareAlt } from 'react-icons/fa';
 import Switch from 'react-switch';
-import { auth } from './FirebaseConfig';
+import { auth } from '../FirebaseConfig';
 
 function ListOptions(props) {
     return (

@@ -1,6 +1,6 @@
 import { httpsCallable } from 'firebase/functions';
 import { FaTrash } from 'react-icons/fa';
-import { functions } from './FirebaseConfig';
+import { functions } from '../FirebaseConfig';
 
 function Collaborator(props) {
     return (

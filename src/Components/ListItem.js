@@ -1,7 +1,7 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { FaTrash, FaBars } from 'react-icons/fa';
-import { auth } from './FirebaseConfig';
+import { auth } from '../FirebaseConfig';
 import TextareaAutosize from 'react-textarea-autosize';
 
 class ListItem extends React.Component {

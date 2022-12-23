@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit } from 'react-icons/fa';
-import spinner from './loading.gif';
+import spinner from '../loading.gif';
 import { child, get, ref } from 'firebase/database';
-import { database } from './FirebaseConfig';
+import { database } from '../FirebaseConfig';
 
 function AllListsItem(props) {
     const [text, updateText] = useState(props.listItemText);

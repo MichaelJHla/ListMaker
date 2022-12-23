@@ -1,9 +1,9 @@
 import { httpsCallable } from "firebase/functions";
 import { useState } from "react";
 import { FaTimesCircle, FaPlus } from 'react-icons/fa';
-import { auth, functions } from "./FirebaseConfig";
-import { Collaborator } from "./Collaborator";
-import spinner from './loading.gif';
+import { auth, functions } from "../FirebaseConfig";
+import { Collaborator } from "../Components/Collaborator";
+import spinner from '../loading.gif';
 
 function CollaboratorsModal(props) {
     const [actionIsLoading, updateActionIsLoading] = useState(false);
@@ -35,7 +35,7 @@ function CollaboratorsModal(props) {
                         }).catch((error) => {
                             console.log(error);
                             updateActionIsLoading(false);
-                            window.alert("Submission failed. Please check the provided user info, and try again");
+                            window.alert("No user found for this email.");
                         });
                     } else {
                         window.alert("Unable to add a user as a collaborator twice.");

@@ -1,12 +1,12 @@
 import React from 'react';
-import { auth } from './FirebaseConfig';
+import { auth } from '../FirebaseConfig';
 import { LogoutHeaderComponent } from './LogoutHeaderComponent';
 import { useLocation, useParams } from 'react-router-dom';
 import { BackToMyListsHeaderComponent } from './BackToMyListsHeaderComponent';
 import { BackToUsersListsHeaderComponent } from './BackToUsersListsHeaderComponent';
 import { CreateAccountHeaderComponent } from './CreateAccountHeaderComponent';
 import { ShareHeaderComponent } from './ShareHeaderComponent';
-import { ReactComponent as Logo } from './image2vector.svg';
+import { ReactComponent as Logo } from '../image2vector.svg';
 import { AccountHeaderComponent } from './AccountHeaderComponent';
 
 function MainHeader(props) {

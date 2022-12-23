@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { auth, database, functions } from './FirebaseConfig';
+import { auth, database, functions } from '../FirebaseConfig';
 import { ref, child, get } from 'firebase/database';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AllListsItem } from './AllListsItem';
-import { NewListForm } from './NewListForm';
-import { MainHeader } from './MainHeader';
-import { makeID } from './MakeID';
+import { AllListsItem } from '../Components/AllListsItem';
+import { NewListForm } from '../Forms/NewListForm';
+import { MainHeader } from '../Components/MainHeader';
+import { makeID } from '../MakeID';
 import { httpsCallable } from 'firebase/functions';
-import { Loading } from './Loading';
+import { Loading } from '../Loading';
 
 function AllListsPage(props) {
     //Create new state to represent the array of lists

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaReply } from 'react-icons/fa';
-import { auth } from './FirebaseConfig';
+import { auth } from '../FirebaseConfig';
 
 function BackToMyListsHeaderComponent(props) {
     const nav = useNavigate();

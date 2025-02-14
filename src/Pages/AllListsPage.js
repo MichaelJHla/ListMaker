@@ -30,7 +30,8 @@ function AllListsPage(props) {
                 for (const l in val) {
                     if (l !== userID && l !== 'name'  && l !== 'collaborativeLists') m.set(l, val[l]['name']);
                 }
-                updateUserMap(m);
+                const mSorted = new Map([...m.entries()].sort((a, b) => a[1].localeCompare(b[1])));
+                updateUserMap(mSorted);
 
                 let c = new Map();
 
@@ -40,7 +41,6 @@ function AllListsPage(props) {
                         console.log(val['collaborativeLists'][l] + " " + l);
                     }
                 }
-                console.log(c);
                 updateCollabMap(c);
             } else {
                 updateUserMap(null);
